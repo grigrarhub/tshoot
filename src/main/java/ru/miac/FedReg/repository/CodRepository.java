@@ -57,7 +57,7 @@ public class CodRepository {
             " JOIN lbr_OptionValue lov on lov.rf_SampleID = ls.SampleID WHERE lov.rf_OptionID=2) as qqq on lbr.GUID = qqq.rf_LaboratoryResearchGUID \n" +
             "JOIN lbr_LabDirectionType lldt on lbr.rf_LabDirectionTypeID = lldt.LabDirectionTypeID \n" +
             "WHERE lbr.Date_Direction >'2021-07-07 00:00:00' and lbr.rf_LabDirectionTypeID=3" +
-            "";
+            " AND lbr.[Number] ='41010100-490652'";
 
     public JdbcTemplate setDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
