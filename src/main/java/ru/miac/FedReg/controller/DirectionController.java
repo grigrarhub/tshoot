@@ -1,55 +1,26 @@
 package ru.miac.FedReg.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.log4j.Log4j;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.miac.FedReg.model.DirectionForProMed;
-import ru.miac.FedReg.model.Response;
-import ru.miac.FedReg.repository.CodRepository;
-import ru.miac.FedReg.service.CodMo;
+import ru.miac.FedReg.service.CodService;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
+@Log4j
 @RestController
 @RequiredArgsConstructor
 public class DirectionController {
-    private static final Logger log = Logger.getLogger(DirectionController.class);
-    @Autowired
-    private final CodRepository codRepository;
-    @Autowired
-    private final CodMo сodMo;
 
-    @Autowired
-    private EsmoController esmoController;
+    private final CodService codService;
+
 
     @GetMapping("/test")
-    public List<DirectionForProMed> getEvn() {
-        log.info("Start exchange at "+ LocalDateTime.now());
-        log.info("Request and prepare directions...");
-        List<DirectionForProMed> list = сodMo.getDirectionsToSend();
-
-        log.info("Got "+list.size()+" directions to send.");
-        int success = sendDirectionsToPromed(list);
-        log.info("Sent "+success+" directions");
-
-        return list;
+   // @Scheduled(cron = "0 */10 * ? * *")
+    public void getEvn() {
+        codService.getDirectionsToSend();
     }
 
-    private int sendDirectionsToPromed(List<DirectionForProMed> list) {
-        int success = 0;
-        for (DirectionForProMed direction : list) {
-            Response response = esmoController.postEvnDirection(direction);
-            if(response.getError_code()==0) {
-                success++;
-                log.info(response.getData().toString());
-            }else {
-                log.error(response.toString()+"\n"+direction);
-            }
-        }
-        return success;
-    }
 
 }

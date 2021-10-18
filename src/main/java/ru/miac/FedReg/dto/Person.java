@@ -6,9 +6,8 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class ApiKay {
-    @JsonProperty("error_code")
-    int errorCode;
-    @JsonProperty("sess_id")
-    String sessId;
+public class Person {
+    @JsonProperty("Person_id")
+    private Long personId;
+
 }

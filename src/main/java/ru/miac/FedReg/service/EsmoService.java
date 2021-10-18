@@ -1,69 +1,99 @@
 package ru.miac.FedReg.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.miac.FedReg.controller.EsmoController;
-import ru.miac.FedReg.model.*;
-import ru.miac.FedReg.repository.ProMedRepository;
+import ru.miac.FedReg.dto.DirectionForProMed;
+import ru.miac.FedReg.dto.LpuSection;
+import ru.miac.FedReg.dto.MedWorker;
+import ru.miac.FedReg.dto.PersonForProMed;
+import ru.miac.FedReg.entity.DirectionOnCod;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
+@RequiredArgsConstructor
 public class EsmoService {
-    @Autowired
-    private EsmoController esmoController;
-    @Autowired
-    private ProMedRepository proMedRepository;
+
+    private final EsmoController esmoController;
 
     private final static DateTimeFormatter codFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
     private final static DateTimeFormatter promedFormatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final static DateTimeFormatter promedFormatterDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    //LocalDateTime.parse(x.getDate_Direction(),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-
     public DirectionForProMed setEnv(DirectionOnCod x) {
         DirectionForProMed forProMed=new DirectionForProMed();
-        forProMed.setPerson_id(esmoController.getPersonId(x.getPat_SS()))
-                .setEvnDirection_Num(x.getNumber())
-                .setEvnDirection_setDate(
-                        LocalDateTime.parse(x.getDate_Direction(),codFormatter)
+
+        forProMed.setEvnDirectionNum(x.getNumber())
+                .setEvnDirectionSetDate(
+                        LocalDateTime.parse(x.getDateDirection(), codFormatter)
                                 .format(promedFormatterDate)) //todo: date
-                .setPayType_id(x.getRf_kl_ProfitTypeID()>1?(199+x.getRf_kl_ProfitTypeID()):(205))
-                .setDiag_id(proMedRepository.getDiagID(x.getDS()))
-                .setLpu_sid(esmoController.getLpuid(isPrehospDirect(x.getSender())))
-                .setLpu_did(esmoController.getLpuid(isPrehospDirect(x.getLpuIn())))
-                .setLpu_aid(esmoController.getLpuid(isPrehospDirect(x.getLpuIn())))
-                .setMedPersonal_id(proMedRepository.getMedstaf(esmoController.getPersonId(x.getDOCT_SS())))
-                .setMedPersonalFIO(x.getDOCT_FIO())
-                .setEvnDirectionHistologic_IsUrgent(x.getPriority()==1?1:0)
-                .setHistologicMaterial_id(x.getValue().contains("биопсия")?1:2)
+                .setPayTypeId(x.getRfKlProfitTypeID() > 1 ? (199 + x.getRfKlProfitTypeID()) : (205))
+                .setDiagId(esmoController.getDiagID(x.getDs()).orElse(0))
+                .setLpuSid(esmoController.getLpuid(isPrehospDirect(x.getSender())).orElse(0L))
+                .setLpuDid(esmoController.getLpuid(isPrehospDirect(x.getLpuIn())).orElse(0L))
+                .setLpuAid(esmoController.getLpuid(isPrehospDirect(x.getLpuIn())).orElse(0L))
+                .setMedpersonalfio(x.getDoctFio())
+                .setEvnDirectionDescr(x.getComment())
+                .setEvnDirectionHistologicIsUrgent(x.getPriority())
+                .setHistologicMaterialId(x.getValue().contains("биопсия") ? 1 : 2)
                 .setBiopsyDT(
-                        LocalDateTime.parse(x.getDate_Direction(),codFormatter)
+                        LocalDateTime.parse(x.getDateDirection(), codFormatter)
                                 .format(promedFormatterDateTime)) //todo: date
-                .setEvn_didDT(
-                        LocalDateTime.parse(x.getDate_Direction(),codFormatter)
+                .setEvnDidDT(
+                        LocalDateTime.parse(x.getDateDirection(), codFormatter)
                                 .format(promedFormatterDateTime))//todo: date
-                .setBiopsyOrder_id(1)
-                .setEvnDirection_Descr(x.getComment());
-        LpuSectionAndProfil profil = proMedRepository.getLpuSectionAndProfil(forProMed.getLpu_sid());
-        LpuSectionAndProfil profil2 = proMedRepository.getLpuSectionAndProfil(forProMed.getLpu_did());
-        System.out.println(profil+" "+profil2);
-        forProMed.setLpuSection_id(profil.getLpuSection_id());
-        forProMed.setLpuSectionProfile_id(profil2.getLpuSectionProfile_id());
-        forProMed.setMedStaffFact_id(proMedRepository.getMedstafFact(forProMed.getMedPersonal_id()));
-        System.out.println(forProMed);
+                .setBiopsyOrderId(1)
+                .setEvnDirectionDescr(x.getComment())
+                .setLpuSectionProfileId(20000348)
+                .setIsPlaceSolFormalin(x.isFormalin() ? 1 : 0);
+
+        Optional<LpuSection> optionalLpuSection = esmoController.getLpuSectionId(x.getOid());
+        if (optionalLpuSection.isPresent()) {
+            LpuSection lpuSection = optionalLpuSection.get();
+            forProMed.setLpuSectionId(lpuSection.getLpuSectionId())
+                    .setLpuUnitTypeId(lpuSection.getLpuUnitTypeId())
+                    .setLpuSectionName(lpuSection.getLpuSectionName());
+        }
+
+        Optional<MedWorker> optionalMedWorker =  esmoController.getMedWorker(x.getDoctss(), forProMed.getLpuSid());
+        if (optionalMedWorker.isPresent()) {
+            MedWorker medWorker = optionalMedWorker.get();
+            forProMed.setMedPersonalId(medWorker.getMedWorker_id())
+                    .setMedStaffFactId(medWorker.getId());
+        }
+
+        long personId = esmoController.getPersonId(x.getPatSS()).orElse(esmoController.getPersonByPolis(x.getPatNPOL()).orElse(0L));
+
+        if (personId==0)
+            personId = esmoController.createPerson(
+                    new PersonForProMed().setPersonSurNameSurName(x.getPatFamily())
+                            .setPersonFirNameFirName(x.getPatName())
+                            .setPersonSecNameSecName(x.getPatOt())
+                            .setPersonBirthDayBirthDay(x.getPatBirthday())
+                            .setPersonSexId(x.getPatW()+1)
+                            .setPersonSnilsSnils(x.getPatSS())
+                            .setSocStatusId(10000114)
+            ).orElse(0L);
+        forProMed.setPersonId(personId);
+
         return forProMed;
     }
-    private String isPrehospDirect(String lpu){
 
-        Pattern pattern = Pattern.compile("\\d{1,}.\\d{1,}.\\d{1,}.\\d{1,}.\\d{1,}.\\d{1,}.\\d{1,}.\\d{1,}.\\d{1,}.\\d{1,}.\\d{1,}");
-        Matcher matcher = pattern.matcher(lpu);
-        while(matcher.find())
-            lpu = matcher.group();
-        return lpu;
+    private String isPrehospDirect(String lpu) {
+        try {
+            Pattern pattern = Pattern.compile("\\d{1,}.\\d{1,}.\\d{1,}.\\d{1,}.\\d{1,}.\\d{1,}.\\d{1,}.\\d{1,}.\\d{1,}.\\d{1,}.\\d{1,}");
+
+            Matcher matcher = pattern.matcher(lpu);
+            while(matcher.find())
+                lpu = matcher.group();
+            return lpu;}
+        catch (Exception e){
+            return "";
+        }
     }
-
 }

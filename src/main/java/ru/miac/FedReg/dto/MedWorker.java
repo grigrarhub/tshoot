@@ -1,10 +1,15 @@
 package ru.miac.FedReg.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import lombok.experimental.Accessors;
 
 @Data
-@Accessors(chain = true)
 public class MedWorker {
-    private long id;
+    @JsonProperty("MedWorker_id")
+    Integer medWorker_id;
+    Integer id;
+    @JsonProperty("LpuSection_id")
+    long lpuSection_id;
+    @JsonProperty("Lpu_id")
+    long lpu_id;
 }

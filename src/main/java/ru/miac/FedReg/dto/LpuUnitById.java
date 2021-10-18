@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class Lpu {
-    @JsonProperty("Lpu_id")
-    private long lpuId;
+public class LpuUnitById {
+    @JsonProperty("LpuUnitType_id")
+    int lpuUnitTypeid;
 }
