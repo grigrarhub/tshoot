@@ -38,6 +38,9 @@ public class DirectionMapper implements RowMapper<DirectionOnCod> {
                 .setPatBirthday(result.getDate("Pat_Birthday"))
                 .setComment(result.getString("Comment"))
                 .setOid(result.getString("OID"))
-                .setFormalin(result.getInt("isFormalin")==1);
+                .setFormalin(result.getInt("isFormalin")==1)
+                .setIsPreviousResearchPerformed(result.getInt("IsPreviousResearchPerformed"))
+                .setAdditionalComment(result.getString("AdditionalComment"))
+                .setPreviousTreatment(result.getString("PreviousTreatment"));
     }
 }

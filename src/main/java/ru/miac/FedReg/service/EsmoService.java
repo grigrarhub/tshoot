@@ -32,7 +32,6 @@ public class EsmoService {
                 .setEvnDirectionSetDate(
                         LocalDateTime.parse(x.getDateDirection(), codFormatter)
                                 .format(promedFormatterDate)) //todo: date
-                .setPayTypeId(x.getRfKlProfitTypeID() > 1 ? (199 + x.getRfKlProfitTypeID()) : (205))
                 .setDiagId(esmoController.getDiagID(x.getDs()).orElse(0))
                 .setLpuSid(esmoController.getLpuid(isPrehospDirect(x.getSender())).orElse(0L))
                 .setLpuDid(esmoController.getLpuid(isPrehospDirect(x.getLpuIn())).orElse(0L))
@@ -41,6 +40,7 @@ public class EsmoService {
                 .setEvnDirectionDescr(x.getComment())
                 .setEvnDirectionHistologicIsUrgent(x.getPriority())
                 .setHistologicMaterialId(x.getValue().contains("биопсия") ? 1 : 2)
+                .setBiopsyOrderId(x.getIsPreviousResearchPerformed()>1?2:1)
                 .setBiopsyDT(
                         LocalDateTime.parse(x.getDateDirection(), codFormatter)
                                 .format(promedFormatterDateTime)) //todo: date
@@ -49,9 +49,10 @@ public class EsmoService {
                                 .format(promedFormatterDateTime))//todo: date
                 .setBiopsyOrderId(1)
                 .setEvnDirectionDescr(x.getComment())
+                .setPrescriptionType_id(11)
                 .setLpuSectionProfileId(20000348)
-                .setIsPlaceSolFormalin(x.isFormalin() ? 1 : 0);
-
+                .setIsPlaceSolFormalin(x.isFormalin() ? 1 : 0)
+                .setPayTypeId(x.getRfKlProfitTypeID() > 1 ? (199 + x.getRfKlProfitTypeID()) : (205));
         Optional<LpuSection> optionalLpuSection = esmoController.getLpuSectionId(x.getOid());
         if (optionalLpuSection.isPresent()) {
             LpuSection lpuSection = optionalLpuSection.get();

@@ -12,6 +12,7 @@ import ru.miac.FedReg.repository.CodRepository;
 import ru.miac.FedReg.repository.HistologicRepository;
 import ru.miac.FedReg.repository.impl.ProMedRepositoryImpl;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -24,19 +25,22 @@ import java.util.Optional;
 public class CodService {
     private final static DateTimeFormatter codFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
 
-    private final CodRepository codRepositoryImpl; //testCodRepository codRepositoryImpl
+    private final CodRepository testCodRepository; //testCodRepository codRepositoryImpl
     private final HistologicRepository esmoRepository;
     private final EsmoController esmoController;
     private final EsmoService esmoService;
     private final ProMedRepositoryImpl proMedRepositoryImpl;
 
-    public void getDirectionsToSend(){
-        directionEsmoFromProMeds(codRepositoryImpl.getDirections());
+    public List<Response> getDirectionsToSend() throws IOException {
+        return directionEsmoFromProMeds(testCodRepository.getDirections());
     }
 
-    public void directionEsmoFromProMeds(List<DirectionOnCod> directionsOnCod){
+    public List<Response> directionEsmoFromProMeds(List<DirectionOnCod> directionsOnCod){
         esmoController.setApikay();
+        List<Response> responses = new ArrayList<>();
+        Response response = null;
         for (DirectionOnCod x : directionsOnCod) {
+            System.out.println(x);
             Histologic responseForDB;
             Optional<Histologic> optionalHistologic = esmoRepository.findAllByNum(x.getNumber());
             responseForDB = optionalHistologic.orElseGet(Histologic::new);
@@ -46,19 +50,25 @@ public class CodService {
                     responseForDB.setDataCod(x.toString()).setNum(x.getNumber());
                     DirectionForProMed direction = esmoService.setEnv(x);
                     responseForDB.setDataProMed(direction.getJson());
-                    Response response = esmoController.postEvnDirection(direction);
+                    response = esmoController.postEvnDirection(direction);
                     responseForDB.setErrorcod(response.getErrorCode());
-                    if(!response.getErrorCode().equals("0"))
+                    if(!response.getErrorCode().equals("0")) {
                         responseForDB.setErrormsg(response.toString());
-                    else {
+                        if(response.getErrorCode().equals("500"))
+                            responseForDB.setIssend(true);
+                    } else {
                         responseForDB.setIssend(true).setDateSend(LocalDateTime.now());
                         proMedRepositoryImpl.updataLpu(direction.getLpuSectionId(),direction.getEvnDirectionNum());
+                        proMedRepositoryImpl.updataEvnDirectionHistologicClinicalData(x.getAdditionalComment(),response.getData().getEvnDirectionId());
+                        proMedRepositoryImpl.updataEvnDirectionHistologicPredOperTreat(x.getPreviousTreatment(),response.getData().getEvnDirectionId());
                     }
                     esmoRepository.save(responseForDB);
                 } catch (Exception e) {
                     esmoRepository.save(responseForDB.setErrormsg(e.getMessage()));
                 }
             }
+            responses.add(response);
         }
+        return responses;
     }
 }

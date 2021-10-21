@@ -9,12 +9,12 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>ru.miac</groupId>
-    <artifactId>tshoot</artifactId>
-    <version>0.0.1</version>
-    <name>tshoot</name>
-    <description>Demo project for Spring Boot</description>
+    <artifactId>histologic</artifactId>
+    <version>0.2</version>
+    <name>histologic</name>
+    <description>send direction from Cod in ProMed</description>
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
     </properties>
     <dependencies>
         <dependency>
@@ -78,6 +78,12 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.23</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -91,7 +97,20 @@
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                         </exclude>
+                        <execution>
+                            <goals>
+                                <goal>build-image</goal>
+                            </goals>
+                        </execution>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19.1</version>
+                <configuration>
+                    <testFailureIgnore>true</testFailureIgnore>
                 </configuration>
             </plugin>
         </plugins>

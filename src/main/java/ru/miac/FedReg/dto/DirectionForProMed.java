@@ -35,7 +35,8 @@ public class DirectionForProMed {
     private long lpuSectionProfileId;//= 20000348;
     @JsonProperty("LpuUnitType_id")
     private int lpuUnitTypeId =15;//=15;
-    @JsonProperty("EvnDirectionHistologic_IsUrgent")
+    @JsonProperty("PrescriptionType_id")
+    private int prescriptionType_id =15;//=15; @JsonProperty("EvnDirectionHistologic_IsUrgent")
     private int evnDirectionHistologicIsUrgent;//=1;
     @JsonProperty("Lpu_aid")
     private long lpuAid;//= 13100928;
@@ -44,7 +45,7 @@ public class DirectionForProMed {
     @JsonProperty("HistologicMaterial_id")
     private int histologicMaterialId;//=2;
     @JsonProperty("BiopsyOrder_id")
-    private int biopsyOrderId = 1;
+    private int biopsyOrderId;
     @JsonProperty("BiopsyDT")
     private String biopsyDT;//=2021-07-27 00:00:00;
     @JsonProperty("Evn_didDT")

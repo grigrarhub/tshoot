@@ -32,4 +32,17 @@ public class ProMedRepositoryImpl implements ProMedRepository {
         JdbcTemplate.execute(query);
     }
 
+    @Override
+    public void updataEvnDirectionHistologicClinicalData(String additionalComment, String num) {
+        String query = "UPDATE EvnDirectionHistologic set EvnDirectionHistologic_ClinicalData  = '"+additionalComment+ "' where EvnDirection_id  = "+num+";";
+        JdbcTemplate.execute(query);
+    }
+
+    @Override
+    public void updataEvnDirectionHistologicPredOperTreat(String previousTreatment, String evnDirectionId) {
+        String query = "UPDATE EvnDirectionHistologic set EvnDirectionHistologic_PredOperTreat  = '"+previousTreatment+ "' where EvnDirection_id  = "+evnDirectionId+";";
+        JdbcTemplate.execute(query);
+    }
+
+
 }

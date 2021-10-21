@@ -32,4 +32,7 @@ public class DirectionOnCod {
     String value;
     String oid;
     boolean isFormalin;
+    int isPreviousResearchPerformed;
+    String additionalComment = " ";
+    String previousTreatment= " ";
 }
