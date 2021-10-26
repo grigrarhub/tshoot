@@ -13,7 +13,7 @@ public class ScheduledService {
 
     private final CodService codService;
 
-   @Scheduled(cron = "0 */10 *  * *")
+   @Scheduled(cron = "0 */10 * * *")
     public void getEvn() throws IOException {
         System.out.println( codService.getDirectionsToSend());
     }
