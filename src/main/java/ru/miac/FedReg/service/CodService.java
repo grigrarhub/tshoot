@@ -25,14 +25,14 @@ import java.util.Optional;
 public class CodService {
     private final static DateTimeFormatter codFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
 
-    private final CodRepository testCodRepository; //testCodRepository codRepositoryImpl
+    private final CodRepository codRepositoryImpl; //testCodRepository codRepositoryImpl
     private final HistologicRepository esmoRepository;
     private final EsmoController esmoController;
     private final EsmoService esmoService;
     private final ProMedRepositoryImpl proMedRepositoryImpl;
 
     public List<Response> getDirectionsToSend() throws IOException {
-        return directionEsmoFromProMeds(testCodRepository.getDirections());
+        return directionEsmoFromProMeds(codRepositoryImpl.getDirections());
     }
 
     public List<Response> directionEsmoFromProMeds(List<DirectionOnCod> directionsOnCod){
@@ -51,6 +51,7 @@ public class CodService {
                     DirectionForProMed direction = esmoService.setEnv(x);
                     responseForDB.setDataProMed(direction.getJson());
                     response = esmoController.postEvnDirection(direction);
+                    System.out.println(response);
                     responseForDB.setErrorcod(response.getErrorCode());
                     if(!response.getErrorCode().equals("0")) {
                         responseForDB.setErrormsg(response.toString());
