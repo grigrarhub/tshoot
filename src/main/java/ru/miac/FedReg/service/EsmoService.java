@@ -38,7 +38,7 @@ public class EsmoService {
                 .setLpuAid(esmoController.getLpuid(isPrehospDirect(x.getLpuIn())).orElse(0L))
                 .setMedpersonalfio(x.getDoctFio())
                 .setEvnDirectionDescr(x.getComment())
-                .setEvnDirectionHistologicIsUrgent(x.getPriority())
+                .setEvnDirectionHistologicIsUrgent(x.getPriority()+1)
                 .setHistologicMaterialId(x.getValue().contains("биопсия") ? 1 : 2)
                 .setBiopsyOrderId(x.getIsPreviousResearchPerformed()>1?2:1)
                 .setBiopsyDT(

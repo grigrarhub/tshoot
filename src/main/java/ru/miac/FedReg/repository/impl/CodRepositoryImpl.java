@@ -14,7 +14,6 @@ import ru.miac.FedReg.repository.CodRepository;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,8 +28,8 @@ public class CodRepositoryImpl implements CodRepository {
     @Value("${cod.datasource.password}")
     private  String password;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    @Value("classpath:request.sql")
-    private Resource sql;
+    @Value("{$sql}")
+    private String sql;
     @PostConstruct
     public void setDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -43,7 +42,7 @@ public class CodRepositoryImpl implements CodRepository {
     @Override
     public List<DirectionOnCod> getDirections() throws IOException {
         MapSqlParameterSource params = new MapSqlParameterSource("date", LocalDateTime.now().minusMinutes(10));//Time.now().minusMinutes(120)
-        return namedParameterJdbcTemplate.query(Files.readString(sql.getFile().toPath()),params,new DirectionMapper());
+        return namedParameterJdbcTemplate.query(sql,params,new DirectionMapper());
     }
 
 
