@@ -4,19 +4,24 @@ import org.springframework.stereotype.Repository;
 import ru.miac.FedReg.entity.DirectionOnCod;
 import ru.miac.FedReg.repository.CodRepository;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
 @Repository("testCodRepository")
 public class TestCodRepository implements CodRepository {
+
+    private final static DateTimeFormatter codFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+
     @Override
     public List<DirectionOnCod> getDirections() {
         return Arrays.asList(
                 new DirectionOnCod()
                         .setComment("setComment")
-                        .setDateDirection("2021-09-20 00:00:00.0")
-                        .setNumber("26300122-709651")
-                        .setPriority(1)
+                        .setDateDirection(LocalDateTime.now().format(codFormatter))
+                        .setNumber("26300122-709446")
+                        .setPriority(0)
                         .setPatFamily("НУРЕТДИНОВ")
                         .setPatName("ВАЛЕРИЙ")
                         .setPatOt("РИФОВИЧ")

@@ -13,7 +13,7 @@ public class ScheduledService {
 
     private final CodService codService;
 
-   @Scheduled(cron = "0 */10 * ? * *")
+   @Scheduled(cron = "0 */10 * ? * *")// выполняется кажыде 10 мин
     public void getEvn() throws IOException {
         codService.getDirectionsToSend();
     }
