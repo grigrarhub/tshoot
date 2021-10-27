@@ -24,8 +24,9 @@ public class EsmoService {
     private final static DateTimeFormatter codFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
     private final static DateTimeFormatter promedFormatterDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final static DateTimeFormatter promedFormatterDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
+    //todo объект создается из объекта ЦОД при помощи АРИ промеда
     public DirectionForProMed setEnv(DirectionOnCod x) {
+        //todo при добавлении данных, необхоимые поля добавить в DirectionForProMed
         DirectionForProMed forProMed=new DirectionForProMed();
 
         forProMed.setEvnDirectionNum(x.getNumber())
