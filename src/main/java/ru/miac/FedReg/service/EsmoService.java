@@ -82,7 +82,7 @@ public class EsmoService {
                             .setSocStatusId(10000114)
             ).orElse(0L);
         forProMed.setPersonId(personId);
-
+        System.out.println( forProMed);
         return forProMed;
     }
 

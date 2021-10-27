@@ -36,7 +36,8 @@ public class DirectionForProMed {
     @JsonProperty("LpuUnitType_id")
     private int lpuUnitTypeId =15;//=15;
     @JsonProperty("PrescriptionType_id")
-    private int prescriptionType_id =15;//=15; @JsonProperty("EvnDirectionHistologic_IsUrgent")
+    private int prescriptionType_id =15;//=15;
+    @JsonProperty("EvnDirectionHistologic_IsUrgent")
     private int evnDirectionHistologicIsUrgent;//=1;
     @JsonProperty("Lpu_aid")
     private long lpuAid;//= 13100928;
