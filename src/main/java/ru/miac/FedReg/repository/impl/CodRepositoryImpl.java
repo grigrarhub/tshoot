@@ -28,7 +28,7 @@ public class CodRepositoryImpl implements CodRepository {
     @Value("${cod.datasource.password}")
     private  String password;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    @Value("{$sql}")
+    @Value("${sql}")
     private String sql;
     @PostConstruct
     public void setDataSource() {
@@ -42,6 +42,7 @@ public class CodRepositoryImpl implements CodRepository {
     @Override
     public List<DirectionOnCod> getDirections() throws IOException {
         MapSqlParameterSource params = new MapSqlParameterSource("date", LocalDateTime.now().minusMinutes(10));//Time.now().minusMinutes(120)
+        System.out.println(sql);
         return namedParameterJdbcTemplate.query(sql,params,new DirectionMapper());
     }
 

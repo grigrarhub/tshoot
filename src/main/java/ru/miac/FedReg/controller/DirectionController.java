@@ -25,7 +25,7 @@ public class DirectionController {
 
     @GetMapping("/test")
     public void getEvn() throws IOException {
-        System.out.println( codService.getDirectionsToSend());
+        codService.getDirectionsToSend();
     }
 
 
