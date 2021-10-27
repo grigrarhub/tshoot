@@ -31,8 +31,8 @@ public class CodService {
     private final EsmoService esmoService;
     private final ProMedRepositoryImpl proMedRepositoryImpl;
 
-    public List<Response> getDirectionsToSend() throws IOException {
-        return directionEsmoFromProMeds(codRepositoryImpl.getDirections());
+    public void getDirectionsToSend() throws IOException {
+         directionEsmoFromProMeds(codRepositoryImpl.getDirections());
     }
 
     public List<Response> directionEsmoFromProMeds(List<DirectionOnCod> directionsOnCod){
@@ -40,7 +40,6 @@ public class CodService {
         List<Response> responses = new ArrayList<>();
         Response response = null;
         for (DirectionOnCod x : directionsOnCod) {
-            System.out.println(x);
             Histologic responseForDB;
             Optional<Histologic> optionalHistologic = esmoRepository.findAllByNum(x.getNumber());
             responseForDB = optionalHistologic.orElseGet(Histologic::new);
